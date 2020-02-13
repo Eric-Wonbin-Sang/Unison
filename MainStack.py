@@ -15,14 +15,25 @@ class MainStack(PyQt5.QtWidgets.QWidget):
 
         self.setWindowTitle("Unison")
 
+        # self.program_list = [
+        #     Window.find_window("Messenger"),
+        #     Window.find_window("GroupMe"),
+        #     Window.find_window("Discord"),
+        #     Window.find_window("Task Manager"),
+        #     Window.find_window("Messages"),
+        #     Window.find_window("KakaoTalk")
+        # ]
+
         self.program_list = [
             Window.find_window("Messenger"),
             Window.find_window("GroupMe"),
             Window.find_window("Discord"),
-            Window.find_window("Task Manager"),
-            Window.find_window("Messages"),
-            Window.find_window("KakaoTalk")
+            Window.find_window("Spotify"),
+            Window.find_window("CONSOLE")
         ]
+
+        for program in self.program_list:
+            print(program)
 
         x = 100
         y = 100
@@ -58,7 +69,7 @@ class MainStack(PyQt5.QtWidgets.QWidget):
                     if temp_program == curr_program:
                         temp_program.move(*self.get_window_params())
                         temp_program.maximize()
-
+                        temp_program.move(*self.get_window_params())
                     else:
                         temp_program.minimize()
             return toggle_visible_programs
@@ -81,16 +92,21 @@ class MainStack(PyQt5.QtWidgets.QWidget):
                 program.minimize()
 
     def moveEvent(self, e):
+        print(e)
         for program in self.program_list:
             program.move(*self.get_window_params())
 
     def keyPressEvent(self, e):
         if e.key() == PyQt5.QtCore.Qt.Key_Escape:
             for program in self.program_list:
-                program.minimize()
+                if program:
+                    program.minimize()
+                    print(program.name, "minimized")
             self.close()
 
     def closeEvent(self, e):
         for program in self.program_list:
-            program.minimize()
+            if program:
+                program.minimize()
+                print(program.name, "minimized")
         self.close()

@@ -1,3 +1,4 @@
+import os
 import ctypes
 from ctypes import wintypes
 
@@ -66,22 +67,21 @@ def get_window_list():
     return window_list
 
 
-def find_window(target_name):
+def find_window(target_name, exe_path=None):
     for window in get_window_list():
         if target_name.lower() in window.title.lower():
             window.name = target_name
             return window
+
+    if exe_path and os.path.exists(exe_path):
+        os.startfile(exe_path)
+
+        for window in get_window_list():
+            if target_name.lower() in window.title.lower():
+                window.name = target_name
+                return window
+
     return None
 
 
-# user32 = ctypes.WinDLL('user32', use_last_error=True)
-#
-# window_list = get_window_list(user32=user32)
-#
-# print(*window_list, sep='\n')
-#
-# print("Handles")
-#
-#
-# print(user32.FindWindowW(None, "Discord"))
-# print(user32.FindWindowW("Discord", None))
+print(*get_window_list(), sep='\n')
