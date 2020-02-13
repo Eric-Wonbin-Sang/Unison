@@ -2,7 +2,7 @@ import PyQt5.QtWidgets
 import PyQt5.QtCore
 import ctypes
 
-import Program
+import Window
 
 import PyCute
 
@@ -15,21 +15,24 @@ class MainStack(PyQt5.QtWidgets.QWidget):
 
         self.setWindowTitle("Unison")
 
+        self.program_list = [
+            Window.find_window("Messenger"),
+            Window.find_window("GroupMe"),
+            Window.find_window("Discord"),
+            Window.find_window("Task Manager"),
+            Window.find_window("Messages"),
+            Window.find_window("KakaoTalk")
+        ]
+
         x = 100
         y = 100
-        width = 1000
+        width = 350 * len(self.program_list)
         height = 50
+
+        self.window_height = 1000
 
         self.setGeometry(x, y, width, height)
         self.user32 = ctypes.WinDLL('user32', use_last_error=True)
-
-        self.program_list = [
-            Program.Program(name="Messenger", identifier="Messenger: Eric", user32=self.user32),
-            Program.Program(name="GroupMe", identifier="GroupMe", user32=self.user32),
-            Program.Program(name="KakaoTalk", identifier="KakaoTalk", user32=self.user32),
-            Program.Program(name="Task Manager", identifier="Task Manager", user32=self.user32),
-            Program.Program(name="Messages for web", identifier="Messages", user32=self.user32)
-        ]
 
         self.button_dict = self.get_button_dict()
         self.h_layout = self.get_h_layout()
@@ -39,11 +42,11 @@ class MainStack(PyQt5.QtWidgets.QWidget):
 
         self.show()
 
-    def get_params(self):
+    def get_window_params(self):
         x = self.geometry().x()
-        y = self.geometry().y()
+        y = self.geometry().y() + 60
         width = self.frameGeometry().width()
-        height = self.frameGeometry().height()
+        height = self.window_height
 
         return x, y, width, height
 
@@ -53,7 +56,7 @@ class MainStack(PyQt5.QtWidgets.QWidget):
             def toggle_visible_programs():
                 for temp_program in self.program_list:
                     if temp_program == curr_program:
-                        temp_program.move(*self.get_params())
+                        temp_program.move(*self.get_window_params())
                         temp_program.maximize()
 
                     else:
@@ -73,13 +76,13 @@ class MainStack(PyQt5.QtWidgets.QWidget):
         for i, program in enumerate(self.program_list):
             if i == 0:
                 program.maximize()
-                program.move(*self.get_params())
+                program.move(*self.get_window_params())
             else:
                 program.minimize()
 
     def moveEvent(self, e):
         for program in self.program_list:
-            program.move(*self.get_params())
+            program.move(*self.get_window_params())
 
     def keyPressEvent(self, e):
         if e.key() == PyQt5.QtCore.Qt.Key_Escape:
