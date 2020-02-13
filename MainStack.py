@@ -1,5 +1,6 @@
 import PyQt5.QtWidgets
 import PyQt5.QtCore
+import time
 import ctypes
 
 import Window
@@ -15,22 +16,15 @@ class MainStack(PyQt5.QtWidgets.QWidget):
 
         self.setWindowTitle("Unison")
 
-        # self.program_list = [
-        #     Window.find_window("Messenger"),
-        #     Window.find_window("GroupMe"),
-        #     Window.find_window("Discord"),
-        #     Window.find_window("Task Manager"),
-        #     Window.find_window("Messages"),
-        #     Window.find_window("KakaoTalk")
-        # ]
-
         self.program_list = [
             Window.find_window("Messenger"),
-            Window.find_window("GroupMe"),
+            Window.find_window("Logitech G HUB"),
             Window.find_window("Discord"),
             Window.find_window("Spotify"),
             Window.find_window("CONSOLE")
         ]
+
+        print("---------------")
 
         for program in self.program_list:
             print(program)
@@ -40,14 +34,17 @@ class MainStack(PyQt5.QtWidgets.QWidget):
         width = 350 * len(self.program_list)
         height = 50
 
-        self.window_height = 1000
+        self.window_height = 750
 
         self.setGeometry(x, y, width, height)
         self.user32 = ctypes.WinDLL('user32', use_last_error=True)
 
         self.button_dict = self.get_button_dict()
+
+        self.v_layout = PyQt5.QtWidgets.QVBoxLayout()
         self.h_layout = self.get_h_layout()
-        self.setLayout(self.h_layout)
+        PyCute.add_to_layout(self.v_layout, self.h_layout, PyCute.get_spacer())
+        self.setLayout(self.v_layout)
 
         self.position_programs()
 
@@ -55,7 +52,7 @@ class MainStack(PyQt5.QtWidgets.QWidget):
 
     def get_window_params(self):
         x = self.geometry().x()
-        y = self.geometry().y() + 60
+        y = self.geometry().y() + self.frameGeometry().height() - 30
         width = self.frameGeometry().width()
         height = self.window_height
 
@@ -67,8 +64,9 @@ class MainStack(PyQt5.QtWidgets.QWidget):
             def toggle_visible_programs():
                 for temp_program in self.program_list:
                     if temp_program == curr_program:
-                        temp_program.move(*self.get_window_params())
                         temp_program.maximize()
+
+                        temp_program.set_foreground()
                         temp_program.move(*self.get_window_params())
                     else:
                         temp_program.minimize()
@@ -92,21 +90,37 @@ class MainStack(PyQt5.QtWidgets.QWidget):
                 program.minimize()
 
     def moveEvent(self, e):
-        print(e)
         for program in self.program_list:
-            program.move(*self.get_window_params())
+            if program.is_visible:
+                program.move(*self.get_window_params())
+
+    def resizeEvent(self, e):
+        for program in self.program_list:
+            if program.is_visible:
+                program.move(*self.get_window_params())
+
+    def showEvent(self, e):
+        for program in self.program_list:
+            if program.is_visible:
+                program.maximize()
+                break
+
+    def hideEvent(self, e):
+        for program in self.program_list:
+            if program.is_visible:
+                program.minimize()
+                program.is_visible = True
+                break
 
     def keyPressEvent(self, e):
         if e.key() == PyQt5.QtCore.Qt.Key_Escape:
             for program in self.program_list:
                 if program:
                     program.minimize()
-                    print(program.name, "minimized")
             self.close()
 
     def closeEvent(self, e):
         for program in self.program_list:
             if program:
                 program.minimize()
-                print(program.name, "minimized")
         self.close()

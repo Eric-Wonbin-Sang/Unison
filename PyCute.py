@@ -63,12 +63,19 @@ def remove_from_layout(layout):
         layout.itemAt(i).widget().setParent(None)
 
 
+def get_spacer():
+    return PyQt5.QtWidgets.QSpacerItem(20, 40, PyQt5.QtWidgets.QSizePolicy.Minimum,
+                                       PyQt5.QtWidgets.QSizePolicy.Expanding)
+
+
 def add_to_layout(parent_layout, *args):
     for arg in args:
         if type(arg) == tuple:
             parent_layout.addWidget(*arg)
         elif PyQt5.QtWidgets.QLayout in type(arg).__mro__:
             parent_layout.addLayout(arg)
+        elif PyQt5.QtWidgets.QSpacerItem in type(arg).__mro__:
+            parent_layout.addSpacerItem(arg)
         else:
             parent_layout.addWidget(arg)
     return parent_layout
