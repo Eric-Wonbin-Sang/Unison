@@ -23,6 +23,7 @@ class MainStack(PyQt5.QtWidgets.QWidget):
             Window.find_window("Spotify"),
             Window.find_window("CONSOLE")
         ]
+        self.program_list = [program for program in self.program_list if program]
 
         print("---------------")
 
