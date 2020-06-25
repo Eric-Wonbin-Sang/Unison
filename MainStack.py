@@ -74,8 +74,9 @@ class MainStack(PyQt5.QtWidgets.QWidget):
 
         button_dict = {}
         for program in self.program_list:
-            button_dict[program.name] = PyCute.Button(default_text=program.name,
-                                                      connect_func=toggle_visible_programs_helper(program))
+            if program:
+                button_dict[program.name] = PyCute.Button(default_text=program.name,
+                                                          connect_func=toggle_visible_programs_helper(program))
         return button_dict
 
     def get_h_layout(self):
